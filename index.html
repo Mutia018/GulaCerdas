@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gula Cerdas - Alat Pengaduk Otomatis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen">
+        <div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+            <div class="max-w-md mx-auto">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-amber-900 mb-2">Gula Cerdas</h1>
+                    <p class="text-amber-700">Alat Pengaduk Gula Aren</p>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-xl p-6 mb-6">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl p-4 text-white">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+                                </svg>
+                                <span class="text-sm font-medium">Suhu</span>
+                            </div>
+                            <div id="tempDisplay" class="text-3xl font-bold">37.0°C</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-2xl p-4 text-white">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                </svg>
+                                <span class="text-sm font-medium">Kelembaban</span>
+                            </div>
+                            <div id="humidDisplay" class="text-3xl font-bold">60%</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 rounded-xl p-4 mb-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                                <span class="font-medium text-amber-900">Status Mesin:</span>
+                            </div>
+                            <span id="statusBadge" class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-400 text-white">
+                                Aktif
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <button id="startBtn" onclick="handleStart()" class="bg-green-500 hover:bg-green-600 text-white rounded-xl py-4 font-semibold flex flex-col items-center gap-2 transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Start
+                        </button>
+                        
+                        <button id="stopBtn" onclick="handleStop()" disabled class="bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-xl py-4 font-semibold flex flex-col items-center gap-2 transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                            </svg>
+                            Stop
+                        </button>
+                        
+                        <button onclick="handleReset()" class="bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-4 font-semibold flex flex-col items-center gap-2 transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v5h5"/>
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="showScreen('alert')" class="bg-white hover:bg-amber-50 rounded-2xl p-4 shadow-lg transition-all flex flex-col items-center gap-2">
+                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                        <span class="font-semibold text-amber-900">Peringatan</span>
+                    </button>
+                    
+                    <button onclick="showScreen('status')" class="bg-white hover:bg-amber-50 rounded-2xl p-4 shadow-lg transition-all flex flex-col items-center gap-2">
+                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        <span class="font-semibold text-amber-900">Status Proses</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Screen -->
+    <div id="alertScreen" class="screen hidden">
+        <div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-100 p-6">
+            <div class="max-w-md mx-auto">
+                <button onclick="showScreen('home')" class="mb-6 text-red-700 hover:text-red-900 font-medium">
+                    ← Kembali
+                </button>
+
+                <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-red-900 mb-2">Layar Peringatan</h2>
+                        <p class="text-red-700">Peringatan Sistem</p>
+                    </div>
+
+                    <div id="alertContent" class="space-y-4">
+                        <div class="bg-yellow-100 border-2 border-yellow-500 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                </svg>
+                                <div>
+                                    <h3 class="font-bold text-yellow-900 mb-1">Mesin Tidak Aktif</h3>
+                                    <p class="text-yellow-800 text-sm">Tekan Start untuk memulai proses pengadukan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Screen -->
+    <div id="statusScreen" class="screen hidden">
+        <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
+            <div class="max-w-md mx-auto">
+                <button onclick="showScreen('home')" class="mb-6 text-blue-700 hover:text-blue-900 font-medium">
+                    ← Kembali
+                </button>
+
+                <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900 mb-2">Layar Status Proses</h2>
+                        <p class="text-blue-700">Proses Pengadukan</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-blue-900">Waktu Proses:</span>
+                                <div class="flex items-center gap-2 text-blue-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <span id="timeDisplay" class="text-xl font-bold">0:00</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-blue-600">Target: 15 menit</div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border-2 border-orange-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-orange-900">Kecepatan:</span>
+                                <span id="speedDisplay" class="text-xl font-bold text-orange-700">Berhenti</span>
+                            </div>
+                            <div id="speedDesc" class="text-sm text-orange-600">Tidak ada aktivitas</div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-green-900">Konsistensi:</span>
+                                <span id="consistencyDisplay" class="text-xl font-bold text-green-700">Hampir Matang</span>
+                            </div>
+                            <div id="consistencyDesc" class="text-sm text-green-600">Menunggu aktivasi</div>
+                        </div>
+
+                        <div id="runningIndicator" class="mt-6 bg-blue-500 text-white rounded-xl p-4 text-center hidden">
+                            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            <p class="font-semibold">Sistem Sedang Berjalan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        const state = {
+            isRunning: false,
+            temperature: 37,
+            humidity: 60,
+            processTime: 0,
+            showAlert: false,
+            interval: null
+        };
+
+        // Utility Functions
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // Screen Navigation
+        function showScreen(screenName) {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('alertScreen').classList.add('hidden');
+            document.getElementById('statusScreen').classList.add('hidden');
+            
+            if (screenName === 'home') {
+                document.getElementById('homeScreen').classList.remove('hidden');
+            } else if (screenName === 'alert') {
+                document.getElementById('alertScreen').classList.remove('hidden');
+                updateAlertScreen();
+            } else if (screenName === 'status') {
+                document.getElementById('statusScreen').classList.remove('hidden');
+            }
+        }
+
+        // Control Functions
+        function handleStart() {
+            state.isRunning = true;
+            state.showAlert = false;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('statusBadge').textContent = 'Aktif';
+            document.getElementById('statusBadge').className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
+            
+            state.interval = setInterval(function() {
+                state.temperature = Math.min(100, state.temperature + Math.random() * 2);
+                state.humidity = Math.max(40, state.humidity - Math.random() * 0.5);
+                state.processTime++;
+                
+                if (state.temperature > 95) {
+                    state.showAlert = true;
+                    handleStop();
+                }
+                
+                updateDisplay();
+            }, 1000);
+            
+            updateDisplay();
+        }
+
+        function handleStop() {
+            state.isRunning = false;
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('statusBadge').textContent = 'Berhenti';
+            document.getElementById('statusBadge').className = 'px-3 py-1 rounded-full text-sm font-semibold bg-gray-400 text-white';
+            
+            if (state.interval) {
+                clearInterval(state.interval);
+                state.interval = null;
+            }
+            
+            updateDisplay();
+        }
+
+        function handleReset() {
+            handleStop();
+            state.temperature = 37;
+            state.humidity = 60;
+            state.processTime = 0;
+            state.showAlert = false;
+            
+            document.getElementById('statusBadge').textContent = 'Aktif';
+            updateDisplay();
+        }
+
+        // Update Display
+        function updateDisplay() {
+            document.getElementById('tempDisplay').textContent = state.temperature.toFixed(1) + '°C';
+            document.getElementById('humidDisplay').textContent = state.humidity.toFixed(0) + '%';
+            document.getElementById('timeDisplay').textContent = formatTime(state.processTime);
+            
+            // Update status screen
+            if (state.isRunning) {
+                document.getElementById('speedDisplay').textContent = 'Sedang';
+                document.getElementById('speedDesc').textContent = 'Pengadukan aktif';
+                document.getElementById('consistencyDesc').textContent = 'Proses berjalan lancar';
+                document.getElementById('runningIndicator').classList.remove('hidden');
+            } else {
+                document.getElementById('speedDisplay').textContent = 'Berhenti';
+                document.getElementById('speedDesc').textContent = 'Tidak ada aktivitas';
+                document.getElementById('consistencyDesc').textContent = 'Menunggu aktivasi';
+                document.getElementById('runningIndicator').classList.add('hidden');
+            }
+            
+            // Update consistency
+            let consistency = 'Hampir Matang';
+            if (state.processTime > 300) consistency = 'Baik';
+            else if (state.processTime > 120) consistency = 'Sedang';
+            document.getElementById('consistencyDisplay').textContent = consistency;
+        }
+
+        function updateAlertScreen() {
+            const alertContent = document.getElementById('alertContent');
+            
+            if (state.showAlert) {
+                alertContent.innerHTML = `
+                    <div class="bg-red-100 border-2 border-red-500 rounded-xl p-4 animate-pulse">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            </svg>
+                            <div>
+                                <h3 class="font-bold text-red-900 mb-1">Suhu Terlalu Tinggi!</h3>
+                                <p class="text-red-800 text-sm">Mesin dihentikan otomatis untuk keamanan. Suhu: ${state.temperature.toFixed(1)}°C</p>
+                            </div>
+                        </div>
+                        <button onclick="state.showAlert = false; handleReset(); showScreen('home');" class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white rounded-lg py-2 font-semibold">
+                            OK
+                        </button>
+                    </div>
+                `;
+            } else if (!state.isRunning) {
+                alertContent.innerHTML = `
+                    <div class="bg-yellow-100 border-2 border-yellow-500 rounded-xl p-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            </svg>
+                            <div>
+                                <h3 class="font-bold text-yellow-900 mb-1">Mesin Tidak Aktif</h3>
+                                <p class="text-yellow-800 text-sm">Tekan Start untuk memulai proses pengadukan.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alertContent.innerHTML = `
+                    <div class="bg-green-100 border-2 border-green-500 rounded-xl p-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            <div>
+                                <h3 class="font-bold text-green-900 mb-1">Sistem Normal</h3>
+                                <p class="text-green-800 text-sm">Proses pengadukan berjalan dengan baik. Semua parameter dalam batas normal.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>
